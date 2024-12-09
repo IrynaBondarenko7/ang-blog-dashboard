@@ -1,1 +1,43 @@
-<p>categories works!</p>
+<div class="container">
+  <div class="row">
+    <div class="col-md-12 bg-secondary-theme p-5 shadow-effect">
+      <h3 class="text-center text-theme-primary">New Category</h3>
+      <p class="text-center mb-5">You can add new category from here ..!</p>
+
+      <form
+        class="text-center form-inline d-flex justify-content-center gap-3"
+        #categoryForm="ngForm"
+        (ngSubmit)="onSubmit(categoryForm)"
+        novalidate
+      >
+        <div class="form-group new-category-input-wrap">
+          <input
+            type="text"
+            name="category"
+            class="form-control shadow-effect new-category-input"
+            placeholder="Add new Category"
+            #newCategory="ngModel"
+            ngModel
+            required
+            [ngClass]="{
+              'is-invalid': newCategory.touched && newCategory.invalid
+            }"
+          />
+          <div
+            class="alert alert-danger"
+            *ngIf="newCategory?.touched && newCategory?.invalid"
+          >
+            Category field is required
+          </div>
+        </div>
+
+        <button
+          class="btn btn-info btn-sub btn-sub-add"
+          [disabled]="categoryForm.invalid"
+        >
+          Add Category
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
