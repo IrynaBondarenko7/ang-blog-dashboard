@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Firestore, collection, addDoc } from '@angular/fire/firestore';
+import { CategoriesService } from '../services/categories.service';
+import { Category } from '../models/category';
 
 @Component({
   selector: 'app-categories',
@@ -11,17 +12,21 @@ import { Firestore, collection, addDoc } from '@angular/fire/firestore';
   styleUrl: './categories.component.css',
 })
 export class CategoriesComponent {
-  constructor(private firestore: Firestore) {}
+  categoryArray?: Array<Category>;
 
+  constructor(private categoryService: CategoriesService) {}
+
+  ngOnInit(): void {
+    this.categoryService.loadData().subscribe((val) => {
+      this.categoryArray = val;
+      console.log(val);
+    });
+  }
   async onSubmit(formData: any): Promise<void> {
+    const categoryData: Category = formData.value;
+
     try {
-      const categoryData = formData.value;
-
-      const categoriesCollection = collection(this.firestore, 'categories');
-
-      const docRef = await addDoc(categoriesCollection, categoryData);
-
-      console.log('Category added successfully!', docRef.id);
+      this.categoryService.saveData(categoryData);
     } catch (error) {
       console.error('Error adding category: ', error);
     }

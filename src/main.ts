@@ -5,6 +5,8 @@ import { AppComponent } from './app/app.component';
 import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
 import { provideAuth, getAuth } from '@angular/fire/auth';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
+import { provideToastr } from 'ngx-toastr';
+import { provideAnimations } from '@angular/platform-browser/animations';
 import { environment } from './environments/environment.prod';
 
 if (environment.production) {
@@ -19,5 +21,10 @@ const firebaseProviders = [
 
 bootstrapApplication(AppComponent, {
   ...appConfig,
-  providers: [...(appConfig.providers || []), ...firebaseProviders],
+  providers: [
+    ...(appConfig.providers || []),
+    ...firebaseProviders,
+    provideAnimations(),
+    provideToastr(),
+  ],
 }).catch((err) => console.error(err));
