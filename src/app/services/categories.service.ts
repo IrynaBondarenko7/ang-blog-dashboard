@@ -4,6 +4,9 @@ import {
   collection,
   addDoc,
   collectionData,
+  doc,
+  updateDoc,
+  deleteDoc,
 } from '@angular/fire/firestore';
 import { ToastrService } from 'ngx-toastr';
 import { Category } from '../models/category';
@@ -18,7 +21,7 @@ export class CategoriesService {
   async saveData(data: Category): Promise<void> {
     try {
       const categoriesCollection = collection(this.firestore, 'categories');
-      const categoryRef = await addDoc(categoriesCollection, data);
+      await addDoc(categoriesCollection, data);
       this.toastr.success('Data Insert Successfully!');
     } catch (error) {
       console.error('Error saving category to Firestore: ', error);
@@ -32,5 +35,29 @@ export class CategoriesService {
     return collectionData(categoriesCollection, {
       idField: 'id',
     }) as Observable<Category[]>;
+  }
+
+  async updateData(id: string, editData: Partial<Category>): Promise<void> {
+    try {
+      const categoryDocRef = doc(this.firestore, `categories/${id}`);
+      await updateDoc(categoryDocRef, editData);
+      this.toastr.success('Category Updated Successfully!');
+    } catch (error) {
+      console.error('Error updating category in Firestore: ', error);
+      this.toastr.error('Something went wrong!');
+      throw error;
+    }
+  }
+
+  async deleteData(id: string): Promise<void> {
+    try {
+      const categoryDocRef = doc(this.firestore, `categories/${id}`);
+      await deleteDoc(categoryDocRef);
+      this.toastr.success('Category Deleted Successfully!');
+    } catch (error) {
+      console.error('Error deleting category from Firestore: ', error);
+      this.toastr.error('Something went wrong!');
+      throw error;
+    }
   }
 }

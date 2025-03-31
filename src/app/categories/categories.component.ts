@@ -13,6 +13,9 @@ import { Category } from '../models/category';
 })
 export class CategoriesComponent {
   categoryArray?: Array<Category>;
+  formCategory?: string;
+  formStatus: string = 'Add';
+  categoryId: string = '';
 
   constructor(private categoryService: CategoriesService) {}
 
@@ -26,9 +29,28 @@ export class CategoriesComponent {
     const categoryData: Category = formData.value;
 
     try {
-      this.categoryService.saveData(categoryData);
+      this.formStatus === 'Add'
+        ? this.categoryService.saveData(categoryData)
+        : this.categoryService.updateData(this.categoryId, categoryData);
     } catch (error) {
       console.error('Error adding category: ', error);
+    }
+
+    formData.reset();
+    this.formStatus = 'Add';
+  }
+
+  onEdit(category: Category): void {
+    this.formCategory = category.category;
+    this.formStatus = 'Edit';
+    this.categoryId = category.id;
+  }
+
+  async onDelete(id: string): Promise<void> {
+    try {
+      await this.categoryService.deleteData(id);
+    } catch (error) {
+      console.error('Error deleting category: ', error);
     }
   }
 }
