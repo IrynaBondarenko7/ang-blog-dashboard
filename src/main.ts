@@ -7,6 +7,7 @@ import { provideAuth, getAuth } from '@angular/fire/auth';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 import { provideToastr } from 'ngx-toastr';
 import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideHttpClient } from '@angular/common/http';
 import { environment } from './environments/environment.prod';
 
 if (environment.production) {
@@ -26,5 +27,6 @@ bootstrapApplication(AppComponent, {
     ...firebaseProviders,
     provideAnimations(),
     provideToastr(),
+    provideHttpClient(),
   ],
 }).catch((err) => console.error(err));
