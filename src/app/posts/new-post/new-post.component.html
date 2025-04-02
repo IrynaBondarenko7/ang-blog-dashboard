@@ -153,10 +153,14 @@
       </div>
     </div>
     <div class="col-md-12 text-center mb-5">
-      <button class="btn btn-info bg-theme" [disabled]="postForm.invalid">
+      <button
+        class="btn btn-info bg-theme"
+        type="submit"
+        [disabled]="postForm.invalid"
+      >
         Save Post
       </button>
-      <button class="btn btn-warning ms-3" routerLink="/posts">
+      <button class="btn btn-warning ms-3" routerLink="/posts" type="button">
         Back to Post
       </button>
     </div>

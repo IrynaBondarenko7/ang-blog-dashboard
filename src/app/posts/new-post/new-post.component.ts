@@ -1,3 +1,4 @@
+import { RouterLink } from '@angular/router';
 import { PostsService } from './../../services/posts.service';
 import { Component, inject } from '@angular/core';
 import {
@@ -8,6 +9,7 @@ import {
 } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { AngularEditorModule } from '@kolkov/angular-editor';
+import { Timestamp } from 'firebase/firestore';
 
 import { CategoriesService } from '../../services/categories.service';
 import { Category } from '../../models/category';
@@ -17,7 +19,7 @@ import { Post } from '../../models/post';
 @Component({
   selector: 'app-new-post',
   standalone: true,
-  imports: [ReactiveFormsModule, AngularEditorModule, CommonModule],
+  imports: [ReactiveFormsModule, AngularEditorModule, CommonModule, RouterLink],
   templateUrl: './new-post.component.html',
   styleUrl: './new-post.component.css',
 })
@@ -88,7 +90,7 @@ export class NewPostComponent {
       isFeatured: false,
       views: 0,
       status: 'new',
-      createdAt: new Date(),
+      createdAt: Timestamp.fromDate(new Date()),
     };
 
     this.postsService.uploadImage(this.selectedImg, postData);
