@@ -1,3 +1,4 @@
+import { PostsService } from './../../services/posts.service';
 import { Component, inject } from '@angular/core';
 import {
   FormBuilder,
@@ -11,6 +12,7 @@ import { AngularEditorModule } from '@kolkov/angular-editor';
 import { CategoriesService } from '../../services/categories.service';
 import { Category } from '../../models/category';
 import { CommonModule } from '@angular/common';
+import { Post } from '../../models/post';
 
 @Component({
   selector: 'app-new-post',
@@ -27,6 +29,8 @@ export class NewPostComponent {
 
   private categoryService = inject(CategoriesService);
   private formBuilder = inject(FormBuilder);
+  private postsService = inject(PostsService);
+
   postForm: FormGroup = this.formBuilder.group({
     title: ['', [Validators.required, Validators.minLength(5)]],
     permalink: [''],
@@ -66,5 +70,29 @@ export class NewPostComponent {
       reader.readAsDataURL(input.files[0]);
       this.selectedImg = input.files[0];
     }
+  }
+
+  onSubmit() {
+    let splittedCategoryData = this.postForm.value.category.split('-');
+
+    const postData: Post = {
+      title: this.postForm.value.title,
+      permalink: this.postForm.value.permalink,
+      excerpt: this.postForm.value.excerpt,
+      category: {
+        categoryId: splittedCategoryData[0],
+        category: splittedCategoryData[1],
+      },
+      postImgPath: '',
+      content: this.postForm.value.content,
+      isFeatured: false,
+      views: 0,
+      status: 'new',
+      createdAt: new Date(),
+    };
+
+    this.postsService.uploadImage(this.selectedImg, postData);
+    this.postForm.reset();
+    this.imgSrc = 'assets/placeholder-img.png';
   }
 }
