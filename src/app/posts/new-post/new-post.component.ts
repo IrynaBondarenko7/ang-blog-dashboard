@@ -1,4 +1,4 @@
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { PostsService } from './../../services/posts.service';
 import { Component, inject } from '@angular/core';
 import {
@@ -21,17 +21,21 @@ import { Post } from '../../models/post';
   standalone: true,
   imports: [ReactiveFormsModule, AngularEditorModule, CommonModule, RouterLink],
   templateUrl: './new-post.component.html',
-  styleUrl: './new-post.component.css',
+  styleUrls: ['./new-post.component.css'],
 })
 export class NewPostComponent {
   permalink = new FormControl({ value: '', disabled: true });
   imgSrc: any = 'assets/placeholder-img.png';
   selectedImg: any;
   categories: Category[] = [];
+  post: any;
+  formStatus: string = 'Add New';
+  updatedPostId: string = '';
 
   private categoryService = inject(CategoriesService);
   private formBuilder = inject(FormBuilder);
   private postsService = inject(PostsService);
+  private route = inject(ActivatedRoute);
 
   postForm: FormGroup = this.formBuilder.group({
     title: ['', [Validators.required, Validators.minLength(5)]],
@@ -45,6 +49,39 @@ export class NewPostComponent {
   constructor() {}
 
   ngOnInit() {
+    this.route.queryParams.subscribe((param) => {
+      this.updatedPostId = param['id'];
+
+      if (this.updatedPostId) {
+        this.formStatus = 'Edit';
+        this.postsService.loadOnePost(this.updatedPostId).subscribe((post) => {
+          if (post) {
+            this.post = post;
+
+            this.postForm = this.formBuilder.group({
+              title: [
+                this.post.title,
+                [Validators.required, Validators.minLength(5)],
+              ],
+              permalink: [{ value: this.post.permalink, disabled: true }],
+              excerpt: [
+                this.post.excerpt,
+                [Validators.required, Validators.minLength(50)],
+              ],
+              category: [
+                `${this.post.category.categoryId}-${this.post.category.category}`,
+                [Validators.required],
+              ],
+              postImg: [''],
+              content: [this.post.content, [Validators.required]],
+            });
+
+            this.imgSrc = this.post.postImgPath;
+          }
+        });
+      }
+    });
+
     this.categoryService.loadData().subscribe((val) => {
       this.categories = val;
     });
@@ -57,7 +94,6 @@ export class NewPostComponent {
   onTitleChanged($event: Event) {
     const title = ($event.target as HTMLInputElement).value;
     const formattedTitle = title.trim().toLowerCase().replace(/\s+/g, '-');
-
     this.permalink.setValue(formattedTitle);
   }
 
@@ -79,7 +115,7 @@ export class NewPostComponent {
 
     const postData: Post = {
       title: this.postForm.value.title,
-      permalink: this.postForm.value.permalink,
+      permalink: this.permalink.value!,
       excerpt: this.postForm.value.excerpt,
       category: {
         categoryId: splittedCategoryData[0],
@@ -93,8 +129,162 @@ export class NewPostComponent {
       createdAt: Timestamp.fromDate(new Date()),
     };
 
-    this.postsService.uploadImage(this.selectedImg, postData);
-    this.postForm.reset();
-    this.imgSrc = 'assets/placeholder-img.png';
+    if (this.updatedPostId) {
+      postData.postImgPath = this.imgSrc;
+    }
+
+    this.postsService
+      .uploadImage(
+        this.selectedImg,
+        postData,
+        this.formStatus,
+        this.updatedPostId
+      )
+      .subscribe(
+        () => {
+          this.postForm.reset();
+          this.imgSrc = 'assets/placeholder-img.png';
+        },
+        (error) => {
+          console.error('Error occurred while submitting the post:', error);
+        }
+      );
   }
 }
+
+// @Component({
+//   selector: 'app-new-post',
+//   standalone: true,
+//   imports: [ReactiveFormsModule, AngularEditorModule, CommonModule, RouterLink],
+//   templateUrl: './new-post.component.html',
+//   styleUrls: ['./new-post.component.css'],
+// })
+// export class NewPostComponent {
+//   imgSrc: any = 'assets/placeholder-img.png';
+//   selectedImg: any;
+//   categories: Category[] = [];
+//   post: any;
+//   formStatus: string = 'Add New';
+//   updatedPostId: string = '';
+
+//   private categoryService = inject(CategoriesService);
+//   private formBuilder = inject(FormBuilder);
+//   private postsService = inject(PostsService);
+//   private route = inject(ActivatedRoute);
+
+//   postForm: FormGroup = this.formBuilder.group({
+//     title: ['', [Validators.required, Validators.minLength(5)]],
+//     permalink: [{ value: '', disabled: true }], // Disabled field
+//     excerpt: ['', [Validators.required, Validators.minLength(50)]],
+//     category: ['', [Validators.required]],
+//     postImg: ['', [Validators.required]],
+//     content: ['', [Validators.required]],
+//   });
+
+//   constructor() {}
+
+//   ngOnInit() {
+//     this.route.queryParams.subscribe((param) => {
+//       this.updatedPostId = param['id'];
+
+//       if (this.updatedPostId) {
+//         this.formStatus = 'Edit';
+//         this.postsService.loadOnePost(this.updatedPostId).subscribe((post) => {
+//           if (post) {
+//             this.post = post;
+//             console.log(post);
+
+//             this.postForm = this.formBuilder.group({
+//               title: [
+//                 this.post.title,
+//                 [Validators.required, Validators.minLength(5)],
+//               ],
+//               permalink: [{ value: this.post.permalink, disabled: true }], // Disabled field, pre-populated
+//               excerpt: [
+//                 this.post.excerpt,
+//                 [Validators.required, Validators.minLength(50)],
+//               ],
+//               category: [
+//                 `${this.post.category.categoryId}-${this.post.category.category}`,
+//                 [Validators.required],
+//               ],
+//               postImg: ['', [Validators.required]],
+//               content: [this.post.content, [Validators.required]],
+//             });
+
+//             this.imgSrc = this.post.postImgPath;
+//           }
+//         });
+//       }
+//     });
+
+//     this.categoryService.loadData().subscribe((val) => {
+//       this.categories = val;
+//     });
+//   }
+
+//   get formControl() {
+//     return this.postForm.controls;
+//   }
+
+//   onTitleChanged($event: Event) {
+//     const title = ($event.target as HTMLInputElement).value;
+//     const formattedTitle = title.trim().toLowerCase().replace(/\s+/g, '-');
+//     this.postForm.get('permalink')?.setValue(formattedTitle); // Synchronize with the form field
+//   }
+
+//   showPreview($event: Event) {
+//     const input = $event.target as HTMLInputElement;
+
+//     if (input.files && input.files[0]) {
+//       const reader = new FileReader();
+//       reader.onload = (e) => {
+//         this.imgSrc = e.target?.result;
+//       };
+//       reader.readAsDataURL(input.files[0]);
+//       this.selectedImg = input.files[0];
+//     }
+//   }
+
+//   onSubmit() {
+//     if (this.postForm.invalid) {
+//       return; // Prevent submitting if form is invalid
+//     }
+
+//     let splittedCategoryData = this.postForm.value.category.split('-');
+
+//     const postData: Post = {
+//       title: this.postForm.value.title,
+//       permalink: this.postForm.value.permalink, // This should now correctly hold the value
+//       excerpt: this.postForm.value.excerpt,
+//       category: {
+//         categoryId: splittedCategoryData[0],
+//         category: splittedCategoryData[1],
+//       },
+//       postImgPath: '',
+//       content: this.postForm.value.content,
+//       isFeatured: false,
+//       views: 0,
+//       status: 'new',
+//       createdAt: Timestamp.fromDate(new Date()),
+//     };
+
+//     this.postsService
+//       .uploadImage(
+//         this.selectedImg,
+//         postData,
+//         this.formStatus,
+//         this.updatedPostId
+//       )
+//       .subscribe(
+//         () => {
+//           // Reset the form after successful submission
+//           this.postForm.reset();
+//           this.imgSrc = 'assets/placeholder-img.png';
+//         },
+//         (error) => {
+//           console.error('Error occurred while submitting the post:', error);
+//         }
+//       );
+//   }
+// }

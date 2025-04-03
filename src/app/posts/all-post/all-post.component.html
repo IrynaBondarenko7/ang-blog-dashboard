@@ -51,7 +51,15 @@
                 <td width="300">{{ post.excerpt }}</td>
                 <td>{{ post.category.category }}</td>
                 <td>{{ post.createdAt.toMillis() | date }}</td>
-                <td></td>
+                <td>
+                  <button
+                    class="btn btn-sm btn-warning"
+                    routerLink="/posts/new"
+                    [queryParams]="{ id: post.id }"
+                  >
+                    Edit
+                  </button>
+                </td>
               </tr>
               }
             </tbody>

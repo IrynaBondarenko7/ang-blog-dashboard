@@ -1,8 +1,8 @@
 <div class="container">
   <div class="row">
     <div class="col-md-12 text-center">
-      <h3 class="text-theme-primary">Add New Post</h3>
-      <p class="mb-5">You can add your post here</p>
+      <h3 class="text-theme-primary">{{ formStatus }} Post</h3>
+      <p class="mb-5">You can {{ formStatus }} your post here</p>
     </div>
   </div>
   <form [formGroup]="postForm" (submit)="onSubmit()">
@@ -47,6 +47,12 @@
                 [formControl]="permalink"
                 formControlName="permalink"
               />
+              <!-- <input
+                type="text"
+                class="form-control"
+                [formControl]="postForm.get('permalink') as FormControl"
+                formControlName="permalink"
+              /> -->
             </div>
             <div class="form-group mt-2">
               <label class="mb-2">Excerpt</label>
@@ -158,8 +164,9 @@
         type="submit"
         [disabled]="postForm.invalid"
       >
-        Save Post
+        {{ formStatus }} Post
       </button>
+
       <button class="btn btn-warning ms-3" routerLink="/posts" type="button">
         Back to Post
       </button>
