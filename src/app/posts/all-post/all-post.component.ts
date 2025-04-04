@@ -35,4 +35,11 @@ export class AllPostComponent {
   onDelete(postImgPath: string, id: string) {
     this.postService.deletePostImage(postImgPath, id).subscribe();
   }
+
+  onFeatured(id: string, value: boolean) {
+    const featuredData = {
+      isFeatured: value,
+    };
+    this.postService.markFeatured(id, featuredData).subscribe();
+  }
 }

@@ -139,4 +139,20 @@ export class PostsService {
       })
     );
   }
+
+  markFeatured(
+    id: string,
+    featuredData: { isFeatured: boolean }
+  ): Observable<void> {
+    const postRef = doc(this.firestore, `posts/${id}`);
+    return from(updateDoc(postRef, featuredData)).pipe(
+      tap(() => {
+        this.toastr.success('Featured status updated!');
+      }),
+      catchError((error) => {
+        this.toastr.error('Something went wrong. Try again!');
+        return throwError(() => error);
+      })
+    );
+  }
 }
