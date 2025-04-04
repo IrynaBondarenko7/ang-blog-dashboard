@@ -4,6 +4,7 @@ import {
   ref,
   uploadBytes,
   getDownloadURL,
+  deleteObject,
 } from '@angular/fire/storage';
 import {
   Firestore,
@@ -13,6 +14,7 @@ import {
   doc,
   getDoc,
   updateDoc,
+  deleteDoc,
 } from '@angular/fire/firestore';
 import { Post } from '../models/post';
 import { ToastrService } from 'ngx-toastr';
@@ -51,6 +53,9 @@ export class PostsService {
       switchMap(() => from(getDownloadURL(fileRef))),
       switchMap((imageURL) => {
         if (formStatus === 'Edit') {
+          if (file) {
+            postData.postImgPath = imageURL;
+          }
           return this.updatePost(id, postData);
         } else {
           postData.postImgPath = imageURL;
@@ -105,6 +110,31 @@ export class PostsService {
       }),
       catchError((error) => {
         this.toastr.error('Something went wrong. Try again!');
+        return throwError(() => error);
+      })
+    );
+  }
+
+  deletePostImage(postImgPath: string, postId: string): Observable<void> {
+    const imageRef = ref(this.storage, postImgPath);
+    return from(deleteObject(imageRef)).pipe(
+      switchMap(() => this.deletePost(postId)),
+      catchError((error) => {
+        this.toastr.error('Error deleting image');
+        return throwError(() => error);
+      })
+    );
+  }
+
+  deletePost(postId: string): Observable<void> {
+    const postDocRef = doc(this.firestore, `posts/${postId}`);
+    return from(deleteDoc(postDocRef)).pipe(
+      switchMap(() => {
+        this.toastr.success('The post has been successfully deleted');
+        return from(Promise.resolve());
+      }),
+      catchError((error) => {
+        this.toastr.error('Error deleting post');
         return throwError(() => error);
       })
     );

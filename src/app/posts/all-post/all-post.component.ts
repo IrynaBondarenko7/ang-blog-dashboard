@@ -31,4 +31,8 @@ export class AllPostComponent {
       day: 'numeric',
     });
   }
+
+  onDelete(postImgPath: string, id: string) {
+    this.postService.deletePostImage(postImgPath, id).subscribe();
+  }
 }
