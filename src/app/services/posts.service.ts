@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import {
   Storage,
   ref,
@@ -33,12 +33,12 @@ import { Router } from '@angular/router';
   providedIn: 'root',
 })
 export class PostsService {
-  constructor(
-    private storage: Storage,
-    private firestore: Firestore,
-    private toastr: ToastrService,
-    private router: Router
-  ) {}
+  private firestore = inject(Firestore);
+  private storage = inject(Storage);
+  private toastr = inject(ToastrService);
+  private router = inject(Router);
+
+  constructor() {}
 
   uploadImage(
     file: File,
