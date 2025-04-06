@@ -25,7 +25,8 @@ This is a content management dashboard for creating and editing posts and catego
 
 1. Clone the repository to your local machine.
 2. Install required dependencies:
-   `npm install` 3. Set up Firebase and configure the database and storage in the app.
-3. Run the application locally:
+   `npm install`
+3. Set up Firebase and configure the database and storage in the app.
+4. Run the application locally:
    `npm start`
-4. Open the app in your browser at `http://localhost:4300`.
+5. Open the app in your browser at `http://localhost:4300`.
