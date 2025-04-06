@@ -1,0 +1,10 @@
+[build]
+  command = "npm run build"
+  publish = "dist/ang-blog-dashboard"
+
+[[plugins]]
+  package = "@netlify/angular-runtime"
+
+  [plugins.inputs]
+  skip = true
+
