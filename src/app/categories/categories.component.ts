@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CategoriesService } from '../services/categories.service';
@@ -17,12 +17,13 @@ export class CategoriesComponent {
   formStatus: string = 'Add';
   categoryId: string = '';
 
-  constructor(private categoryService: CategoriesService) {}
+  private categoryService = inject(CategoriesService);
+
+  constructor() {}
 
   ngOnInit(): void {
     this.categoryService.loadData().subscribe((val) => {
       this.categoryArray = val;
-      console.log(val);
     });
   }
   async onSubmit(formData: any): Promise<void> {

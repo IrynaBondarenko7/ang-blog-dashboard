@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import {
   Firestore,
   collection,
@@ -16,7 +16,10 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class CategoriesService {
-  constructor(private firestore: Firestore, private toastr: ToastrService) {}
+  private firestore = inject(Firestore);
+  private toastr = inject(ToastrService);
+
+  constructor() {}
 
   async saveData(data: Category): Promise<void> {
     try {
