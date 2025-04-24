@@ -1,13 +1,13 @@
 <div class="container">
   <div class="row">
-    <div class="col-md-12 bg-secondary-theme p-5 shadow-effect">
+    <div class="col-md-12 bg-secondary-theme p-3 p-md-5 shadow-effect">
       <h3 class="text-center text-theme-primary">{{ formStatus }} Category</h3>
       <p class="text-center mb-5">
         You can {{ formStatus }} category from here ..!
       </p>
 
       <form
-        class="text-center form-inline d-flex justify-content-center gap-3"
+        class="text-center form-inline d-flex flex-column flex-md-row justify-content-center gap-3"
         #categoryForm="ngForm"
         (ngSubmit)="onSubmit(categoryForm)"
         novalidate
@@ -62,15 +62,17 @@
               <tr>
                 <td>{{ i + 1 }}</td>
                 <td>{{ category.category }}</td>
-                <td>
+                <td
+                  class="d-flex flex-column flex-xl-row justify-content-center align-items-center gap-2"
+                >
                   <button
-                    class="btn btn-sm btn-warning"
+                    class="btn btn-sm btn-warning w-100"
                     (click)="onEdit(category)"
                   >
                     Edit
                   </button>
                   <button
-                    class="btn btn-sm btn-danger ms-2"
+                    class="btn btn-sm btn-danger w-100"
                     (click)="onDelete(category.id)"
                   >
                     Delete
