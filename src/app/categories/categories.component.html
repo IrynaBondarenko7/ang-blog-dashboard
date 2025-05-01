@@ -25,12 +25,9 @@
               'is-invalid': newCategory.touched && newCategory.invalid
             }"
           />
-          <div
-            class="alert alert-danger"
-            *ngIf="newCategory?.touched && newCategory?.invalid"
-          >
-            Category field is required
-          </div>
+          @if (newCategory?.touched && newCategory?.invalid) {
+          <div class="alert alert-danger">Category field is required</div>
+          }
         </div>
 
         <button
