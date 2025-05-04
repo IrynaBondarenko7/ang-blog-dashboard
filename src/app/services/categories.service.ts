@@ -6,7 +6,8 @@ import {
   collectionData,
   doc,
   updateDoc,
-  deleteDoc,
+  where,
+  query,
 } from '@angular/fire/firestore';
 import { ToastrService } from 'ngx-toastr';
 import { Category } from '../models/category';
@@ -34,7 +35,10 @@ export class CategoriesService {
   }
 
   loadData(): Observable<Category[]> {
-    const categoriesCollection = collection(this.firestore, 'categories');
+    const categoriesCollection = query(
+      collection(this.firestore, 'categories'),
+      where('isDeleted', '==', false)
+    );
     return collectionData(categoriesCollection, {
       idField: 'id',
     }) as Observable<Category[]>;
@@ -55,10 +59,10 @@ export class CategoriesService {
   async deleteData(id: string): Promise<void> {
     try {
       const categoryDocRef = doc(this.firestore, `categories/${id}`);
-      await deleteDoc(categoryDocRef);
+      await updateDoc(categoryDocRef, { isDeleted: true });
       this.toastr.success('Category Deleted Successfully!');
     } catch (error) {
-      console.error('Error deleting category from Firestore: ', error);
+      console.error('Error soft-deleting category in Firestore: ', error);
       this.toastr.error('Something went wrong!');
       throw error;
     }
